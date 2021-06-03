@@ -123,7 +123,7 @@ class AbonadoController extends Controller
         //
         $abonado = Abonado::where('id',$id)->first();
         $abonado->delete();
-        return "Abonado eliminado correctamente";
+        return "Abonado eliminado satifasctoriamente";
     }
 
     public function search($term)
