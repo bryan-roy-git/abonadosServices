@@ -13,7 +13,7 @@ use Illuminate\Filesystem\FilesystemManager;
 
 // use Illuminate\Support\Facades\File;
 
-class AbonadoController extends Controller
+class AbonadoController extends ApiResponseController
 {
     /**
      * Display a listing of the resource.
@@ -51,7 +51,10 @@ class AbonadoController extends Controller
         $validator = Validator::make($request->all(), AbonadoRulesController::abonadoRules());
 
         if ($validator->fails()) {
-            return json_encode($validator->errors($validator));
+            // return response()->json("data",500)
+            dd("hol");
+            // return $this->errorValidateResponse($validator->errors());
+            // return json_encode($validator->errors());
         }else{
             // return "validado";
             $new_abonado = $request->all();
@@ -61,7 +64,8 @@ class AbonadoController extends Controller
                 $new_abonado["foto"] = $filename;
             }
             $abonado = Abonado::create($new_abonado);
-            return "Abonado dado de alta correctamente";
+            // return "Abonado dado de alta correctamente";
+            return $this->successResponse("Abonado dado de alta correctamente");
         }
     }
 

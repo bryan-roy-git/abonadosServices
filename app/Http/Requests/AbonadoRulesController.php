@@ -23,13 +23,14 @@ class AbonadoRulesController extends FormRequest
     }
     public static function updateRules () {
         return [
-            'id' => 'exists:App\Models\Abonado,id',
+            // 'id' => 'exists:App\Models\Abonado,id',
+            'id' => 'required|exists:abonados,id',
             'foto' => 'mimes:png',
             'nif' => '',
             'nombre' => 'min:3',
             // 'apellidos' => 'required|min:5',
             // 'telefono' => '',
-            // 'email' => 'required|email|unique:abonados|exist',
+            'email' => 'required|email|unique:abonados,email,id',
             // 'numero_abonado' => '',
             // 'estado' => '',
             // 'id_tarifa' => '',
