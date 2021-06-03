@@ -56,7 +56,7 @@ class AbonadoController extends Controller
             // return "validado";
             $new_abonado = $request->all();
             if($request->foto){
-                $filename = time().".".$request->foto->extension();
+                $filename = $request->nif."-".time().".".$request->foto->extension();
                 $request->foto->move(public_path('abonados'),$filename);
                 $new_abonado["foto"] = $filename;
             }
@@ -78,7 +78,8 @@ class AbonadoController extends Controller
         $abonado->foto = url('/abonados')."/".$abonado->foto;
         $abonado->tarifa;
         // dd($abonado);
-        return view('abonado')->with('abonado',$abonado);
+        return response()->json($abonado, 200);
+        // return view('abonado')->with('abonado',$abonado);
     }
 
     /**
@@ -96,17 +97,19 @@ class AbonadoController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         //
+        // dd($request->all());
         $validator = Validator::make($request->all(), AbonadoRulesController::updateRules());
+        // dd($validator->fails());
         if ($validator->fails()) {
             return json_encode($validator->errors($validator));
         }else{
-            $abonado = Abonado::where('id',$id)->first();
+            $abonado = Abonado::where('id',$request->id)->first();
+            
             $abonado->update($request->all());
             return "Abonado actualizado correctamente";
         }

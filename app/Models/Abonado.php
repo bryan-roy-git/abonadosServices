@@ -25,6 +25,16 @@ class Abonado extends Model
         'qr',
     ];
 
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        "created_at",
+    ];
+
+
     public function tarifa(){
         return $this->belongsTo(Tarifa::class,"id_tarifa","id");
     }

@@ -8,7 +8,7 @@ class AbonadoRulesController extends FormRequest
     public static function abonadoRules () {
         return [
             'foto' => 'mimes:png',
-            'nif' => 'required|min:9',
+            'nif' => 'required|min:9|unique:abonados',
             'nombre' => 'required|min:3',
             // 'apellidos' => 'required|min:5',
             // 'telefono' => '',
@@ -17,26 +17,25 @@ class AbonadoRulesController extends FormRequest
             // 'estado' => '',
             // 'id_tarifa' => '',
             // 'pagado_tarifa' => '',
-            
             // 'qr' => '',
 
         ];
     }
     public static function updateRules () {
         return [
+            'id' => 'exists:App\Models\Abonado,id',
             'foto' => 'mimes:png',
-            'nif' => 'min:9',
+            'nif' => '',
             'nombre' => 'min:3',
             // 'apellidos' => 'required|min:5',
             // 'telefono' => '',
-            'email' => 'email|unique:abonados',
+            // 'email' => 'required|email|unique:abonados|exist',
             // 'numero_abonado' => '',
             // 'estado' => '',
             // 'id_tarifa' => '',
             // 'pagado_tarifa' => '',
             
             // 'qr' => '',
-
         ];
     }
 
