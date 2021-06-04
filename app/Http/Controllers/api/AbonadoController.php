@@ -51,10 +51,8 @@ class AbonadoController extends ApiResponseController
         $validator = Validator::make($request->all(), AbonadoRulesController::abonadoRules());
 
         if ($validator->fails()) {
-            // return response()->json("data",500)
-            dd("hol");
-            // return $this->errorValidateResponse($validator->errors());
-            // return json_encode($validator->errors());
+            return $this->errorValidateResponse($validator->errors());
+
         }else{
             // return "validado";
             $new_abonado = $request->all();
@@ -64,8 +62,8 @@ class AbonadoController extends ApiResponseController
                 $new_abonado["foto"] = $filename;
             }
             $abonado = Abonado::create($new_abonado);
-            // return "Abonado dado de alta correctamente";
             return $this->successResponse("Abonado dado de alta correctamente");
+
         }
     }
 
@@ -82,7 +80,9 @@ class AbonadoController extends ApiResponseController
         $abonado->foto = url('/abonados')."/".$abonado->foto;
         $abonado->tarifa;
         // dd($abonado);
-        return response()->json($abonado, 200);
+        // return response()->json($abonado, 200);
+        return $this->successResponse($abonado);
+
         // return view('abonado')->with('abonado',$abonado);
     }
 
@@ -106,16 +106,15 @@ class AbonadoController extends ApiResponseController
     public function update(Request $request)
     {
         //
-        // dd($request->all());
         $validator = Validator::make($request->all(), AbonadoRulesController::updateRules());
-        // dd($validator->fails());
         if ($validator->fails()) {
-            return json_encode($validator->errors($validator));
+            return $this->errorValidateResponse($validator->errors());
         }else{
             $abonado = Abonado::where('id',$request->id)->first();
             
             $abonado->update($request->all());
-            return "Abonado actualizado correctamente";
+            return $this->successResponse("Abonado actualizado correctamente");
+
         }
   
     }
