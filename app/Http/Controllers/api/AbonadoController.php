@@ -8,10 +8,13 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\AbonadoRulesController;
-use Illuminate\Filesystem\FilesystemManager;
 
-// use Illuminate\Support\Facades\File;
+use Intervention\Image\Facades\Image;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Filesystem\FilesystemManager;
+use App\Http\Requests\AbonadoRulesController;
+
+use Illuminate\Support\Facades\File;
 
 class AbonadoController extends ApiResponseController
 {
@@ -24,7 +27,9 @@ class AbonadoController extends ApiResponseController
     {
         //
         $abonados = Abonado::all();
-        return $abonados;
+        return $this->successResponse($abonados);
+
+        // return $abonados;
     }
 
     /**
@@ -48,6 +53,7 @@ class AbonadoController extends ApiResponseController
     public function store(Request $request)
     {
 
+        // die();
         $validator = Validator::make($request->all(), AbonadoRulesController::abonadoRules());
 
         if ($validator->fails()) {
@@ -56,12 +62,21 @@ class AbonadoController extends ApiResponseController
         }else{
             // return "validado";
             $new_abonado = $request->all();
-            if($request->foto){
-                $filename = $request->nif."-".time().".".$request->foto->extension();
-                $request->foto->move(public_path('abonados'),$filename);
-                $new_abonado["foto"] = $filename;
-            }
+   
+            $filename = $request->nif."-".time().".".$request->foto->extension();
+            $request->foto->move(public_path('abonados'),$filename);
+            $new_abonado["foto"] = $filename;
+
+            $qrFile = $request->nif."-".time().".".'svg';
+            // return QrCode::generate('');
+
+            QrCode::size(100)->generate('https://www.simplesoftware.io/#/docs/simple-qrcode','../public/qrcodes/'.$qrFile);
+            // die();
+            $new_abonado["qr"] = $qrFile;
+
+            // dd($new_abonado);
             $abonado = Abonado::create($new_abonado);
+            dd($abonado->id);
             return $this->successResponse("Abonado dado de alta correctamente");
 
         }
@@ -78,12 +93,10 @@ class AbonadoController extends ApiResponseController
 
         $abonado = Abonado::where('id',$id)->first();
         $abonado->foto = url('/abonados')."/".$abonado->foto;
+        $abonado->qr = url('/qrcodes')."/".$abonado->qr;
         $abonado->tarifa;
-        // dd($abonado);
-        // return response()->json($abonado, 200);
-        return $this->successResponse($abonado);
-
-        // return view('abonado')->with('abonado',$abonado);
+        // return $this->successResponse($abonado);
+        return view('abonado')->with('abonado',$abonado);
     }
 
     /**
@@ -128,18 +141,18 @@ class AbonadoController extends ApiResponseController
     {
         //
         $abonado = Abonado::where('id',$id)->first();
+        File::delete(public_path('abonados/'.$abonado->foto));
+        File::delete(public_path('qrcodes/'.$abonado->qr));
         $abonado->delete();
-        return "Abonado eliminado satifasctoriamente";
+        return $this->successResponse("Eliminado correctamente");
     }
 
     public function search($term)
     {
-        //
         $abonados = Abonado::where('nombre', 'like', '%'.$term.'%')
                     ->orWhere('apellidos', 'like','%'.$term.'%')
                     ->get();
-        dd($abonados);
-        return $abonados;
+        return $this->successResponse($abonados);
     }
 
 }

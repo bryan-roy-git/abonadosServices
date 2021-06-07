@@ -7,7 +7,7 @@ class AbonadoRulesController extends FormRequest
 {
     public static function abonadoRules () {
         return [
-            'foto' => 'mimes:png',
+            'foto' => 'mimes:png,jpg',
             'nif' => 'required|min:9|unique:abonados',
             'nombre' => 'required|min:3',
             // 'apellidos' => 'required|min:5',
