@@ -19,7 +19,7 @@ class AbonadoRulesController extends FormRequest
             'nif' => 'required|min:9|unique:abonados',
             'nombre' => 'required|min:3',
             'apellidos' => 'required|min:3',
-            'telefono' => 'required',
+            'telefono' => 'required|min:9',
             'email' => 'required|email|unique:abonados',
             // 'numero_abonado' => '',
             // 'estado' => '',

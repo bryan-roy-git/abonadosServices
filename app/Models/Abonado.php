@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Abonado extends Model
 {
+    // const URL = url('/abonados');
     use HasFactory;
     protected $table = 'abonados';
     protected $fillable = [
@@ -37,5 +38,9 @@ class Abonado extends Model
 
     public function tarifa(){
         return $this->belongsTo(Tarifa::class,"id_tarifa","id");
+    }
+
+    public function tarifas(){
+        return $this->hasMany(Tarifa::class,"id");
     }
 }

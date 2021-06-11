@@ -5,7 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Models\Abonado;
 use Illuminate\Http\Request;
 // use App\Http\Controllers\Controller;
-
+use Illuminate\Support\Facades\DB;
 // use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\File;
 
 class AbonadoController extends ApiResponseController
 {
+    const CONSTANTS = [
+        'qrExtension' => '.png'
+    ];
     /**
      * Display a listing of the resource.
      *
@@ -25,8 +28,11 @@ class AbonadoController extends ApiResponseController
      */
     public function index()
     {
-        //
-        $abonados = Abonado::all();
+        $abonados = Abonado::select("*", 
+                        DB::raw("CONCAT('".url('/qrcodes')."/',abonados.qr) AS qr"),
+                        DB::raw("CONCAT('".url('/abonados')."/',abonados.foto) AS foto"))
+                    ->with('tarifa')
+                    ->get();
         return $this->successResponse($abonados);
 
         // return $abonados;
@@ -39,8 +45,6 @@ class AbonadoController extends ApiResponseController
      */
     public function create()
     {
-        //
-        // $tarifas = Tarifa::all();
         return view('form');
     }
 
@@ -52,8 +56,7 @@ class AbonadoController extends ApiResponseController
      */
     public function store(Request $request)
     {
-
-        // die();
+        
         $validator = Validator::make($request->all(), AbonadoRulesController::abonadoRules());
 
         if ($validator->fails()) {
@@ -66,17 +69,26 @@ class AbonadoController extends ApiResponseController
             $filename = $hash.".".$request->foto->extension(); // ----> NAME FILE FOTO
             $request->foto->move(public_path('abonados'),$filename);
             $new_abonado["foto"] = $filename;
-            
-            $qrFile = $hash.'.png'; // ----> NAME FILE QrCode
+
+            $const = self::CONSTANTS;
+            $qrFile = $hash.$const['qrExtension']; // ----> NAME FILE QrCode
             QrCode::format('png')->size(200)->generate($hash,'../public/qrcodes/'.$qrFile);
             $new_abonado["qr"] = $qrFile;
 
-            // dd($new_abonado);
             $abonado = Abonado::create($new_abonado);
-            // dd($abonado->id);
-            return $this->successResponse($abonado,"Abonado dado de alta correctamente");
+            $mapAbonado = $this->mapAbonado($abonado);
+            return $this->successResponse($mapAbonado,"Abonado dado de alta correctamente");
 
         }
+    }
+
+    private function mapAbonado($abonado){
+        //TODO si es null abonado
+        $abonado->foto = url('/abonados')."/".$abonado->foto;
+        $abonado->qr = url('/qrcodes')."/".$abonado->qr;
+        $abonado->tarifa;
+
+        return $abonado;
     }
 
     /**
@@ -87,13 +99,15 @@ class AbonadoController extends ApiResponseController
      */
     public function show($id)
     {
-
         $abonado = Abonado::where('id',$id)->first();
-        $abonado->foto = url('/abonados')."/".$abonado->foto;
-        $abonado->qr = url('/qrcodes')."/".$abonado->qr;
-        $abonado->tarifa;
-        // return $this->successResponse($abonado);
-        return view('abonado')->with('abonado',$abonado);
+        // dd($abonado);
+        if ($abonado){
+            $mapAbonado = $this->mapAbonado($abonado);
+            return $this->successResponse($mapAbonado);
+        }else{
+            return $this->errorResponse("Abonado no existe");
+        }
+        
     }
 
     /**
@@ -127,6 +141,7 @@ class AbonadoController extends ApiResponseController
                 $hash= md5($request->nif."-".time()).".".$request->foto->extension();
                 File::delete(public_path('abonados/'.$abonado->foto));
                 $request->foto->move(public_path('abonados'),$hash);
+                
                 $new_values = $request->all();
                 $new_values["foto"] = $hash;
                 // dd($new_values);
@@ -135,7 +150,8 @@ class AbonadoController extends ApiResponseController
             }else{
                 $abonado->update($request->all());
             }
-            return $this->successResponse($abonado,"Abonado actualizado correctamente");
+                $mapAbonado = $this->mapAbonado($abonado);
+            return $this->successResponse($mapAbonado,"Abonado actualizado correctamente");
 
         }
   

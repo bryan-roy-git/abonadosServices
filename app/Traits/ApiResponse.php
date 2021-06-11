@@ -13,4 +13,9 @@ trait ApiResponse{
         return response()->json(array("error" => true, "data" => $data, "code" => $code, "msj" => $msj), $code);
     }
 
+    public function errorResponse($data, $code = 400, $msj = '')
+    {
+        return response()->json(array("error" => true, "data" => $data, "code" => $code, "msj" => $msj), $code);
+    }
+
 }
