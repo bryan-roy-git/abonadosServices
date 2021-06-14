@@ -20,6 +20,7 @@ class AbonadoController extends ApiResponseController
 {
     const CONSTANTS = [
         'qrExtension' => '.png'
+
     ];
     /**
      * Display a listing of the resource.
@@ -74,8 +75,11 @@ class AbonadoController extends ApiResponseController
             $qrFile = $hash.$const['qrExtension']; // ----> NAME FILE QrCode
             QrCode::format('png')->size(200)->generate($hash,'../public/qrcodes/'.$qrFile);
             $new_abonado["qr"] = $qrFile;
-
+            
             $abonado = Abonado::create($new_abonado);
+            $abonado->hash= $hash;
+            $abonado->numero_abonado = $abonado->id;
+            $abonado->save();
             $mapAbonado = $this->mapAbonado($abonado);
             return $this->successResponse($mapAbonado,"Abonado dado de alta correctamente");
 
@@ -83,6 +87,9 @@ class AbonadoController extends ApiResponseController
     }
 
     private function mapAbonado($abonado){
+        if($abonado == null){
+            return null;
+        }
         //TODO si es null abonado
         $abonado->foto = url('/abonados')."/".$abonado->foto;
         $abonado->qr = url('/qrcodes')."/".$abonado->qr;
@@ -104,10 +111,10 @@ class AbonadoController extends ApiResponseController
         if ($abonado){
             $mapAbonado = $this->mapAbonado($abonado);
             return $this->successResponse($mapAbonado);
+            // return view('abonado')->with('abonado',$abonado);
         }else{
             return $this->errorResponse("Abonado no existe");
         }
-        
     }
 
     /**
@@ -172,12 +179,38 @@ class AbonadoController extends ApiResponseController
         return $this->successResponse("Eliminado correctamente");
     }
 
-    public function search($term)
+    public function search(Request $request)
     {
-        $abonados = Abonado::where('nombre', 'like', '%'.$term.'%')
-                    ->orWhere('apellidos', 'like','%'.$term.'%')
-                    ->get();
+        $params =  [   
+            'id',
+            'nif',
+            'nombre',
+            'apellidos',
+            'telefono',
+            'email',
+            'numeo_abonado',
+            'estado',
+            'id_tarifa',
+            'pagado_tarifa',
+            'foto',
+            'qr',
+            'hash'   
+        ];
+
+        $abonados = Abonado::select("*", 
+            DB::raw("CONCAT('".url('/qrcodes')."/',abonados.qr) AS qr"),
+            DB::raw("CONCAT('".url('/abonados')."/',abonados.foto) AS foto"));
+        // dump($abonados);
+        foreach ($request->all() as $key => $value) {            
+            if (in_array($key, $params)) {
+                // dump($key);                
+            $abonados = $abonados->where($key, 'like', '%'.$value.'%');
+            }
+        }        
+        $abonados = $abonados->with('tarifa')->get();
         return $this->successResponse($abonados);
+
     }
+
 
 }

@@ -14,6 +14,7 @@ class AbonadoRulesController extends FormRequest
     }
 
     public static function abonadoRules () {
+        //TODO controlar boolean que no sea texto
         return [
             'foto' => 'mimes:png,jpg',
             'nif' => 'required|min:9|unique:abonados',

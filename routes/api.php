@@ -20,8 +20,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::resource('abonado', App\Http\Controllers\api\AbonadoController::class)->except(['update']);
 Route::post('/abonado/update', [App\Http\Controllers\api\AbonadoController::class,'update'])->name('abonado.update');
 
-Route::get('/abonado/searchAbonados/{term}', [App\Http\Controllers\api\AbonadoController::class,'search'])->name('abonado.search');
+Route::post('/abonado/searchAbonados', [App\Http\Controllers\api\AbonadoController::class,'search'])->name('abonado.search');
+Route::get('/abonado/searchQr/{qr}', [App\Http\Controllers\api\AbonadoController::class,'searchQr'])->name('abonado.searchQr');
+
+
 // Route::get('foto/{path}', [App\Http\Controllers\api\AbonadoController::class,'getFoto'])->name('abonado.foto');
+
 
 Route::get('tarifas', [App\Http\Controllers\api\TarifaController::class,'index']);
 

@@ -24,6 +24,7 @@ class Abonado extends Model
         'pagado_tarifa',
         'foto',
         'qr',
+
     ];
 
     /**
@@ -40,7 +41,4 @@ class Abonado extends Model
         return $this->belongsTo(Tarifa::class,"id_tarifa","id");
     }
 
-    public function tarifas(){
-        return $this->hasMany(Tarifa::class,"id");
-    }
 }
