@@ -57,7 +57,7 @@ class AbonadoController extends ApiResponseController
      */
     public function store(Request $request)
     {
-        
+        // dd($request->all());
         $validator = Validator::make($request->all(), AbonadoRulesController::abonadoRules());
 
         if ($validator->fails()) {
@@ -181,6 +181,7 @@ class AbonadoController extends ApiResponseController
 
     public function search(Request $request)
     {
+        // dd($request);
         $params =  [   
             'id',
             'nif',
