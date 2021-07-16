@@ -16,15 +16,14 @@ class AbonadoRulesController extends FormRequest
     public static function abonadoRules () {
         //TODO controlar boolean que no sea texto
         return [
-            // 'foto' => 'mimes:png,jpg',
+            'foto' => 'required',
             'nif' => 'required|min:9|unique:abonados',
             'nombre' => 'required|min:3',
             'apellidos' => 'required|min:3',
             'telefono' => 'required|min:9',
             'email' => 'required|email|unique:abonados',
-            // 'numero_abonado' => '',
-            // 'estado' => '',
-            'id_tarifa' => 'required|exists:tarifas,id',
+            'estado' => 'required',
+            'id_tarifa' => 'required',
             // 'pagado_tarifa' => '',
             // 'qr' => '',
 
@@ -36,10 +35,10 @@ class AbonadoRulesController extends FormRequest
             // 'id' => 'exists:App\Models\Abonado,id',
             'id' => 'required|exists:abonados,id',
             'nif' => 'required|min:9|unique:abonados,nif,'.$id,
-            'foto' => 'mimes:png,jpg',
-            'nombre' => 'min:3',
-            // 'apellidos' => 'required|min:5',
-            // 'telefono' => '',
+            'foto' => 'required',
+            'nombre' => 'required|min:3',
+            'apellidos' => 'required|min:5',
+            'telefono' => 'required|min:9',
             'email' => 'required|email|unique:abonados,email,'.$id,
             'id_tarifa' => 'required|exists:tarifas,id',
 
@@ -49,6 +48,23 @@ class AbonadoRulesController extends FormRequest
             // 'pagado_tarifa' => '',
             
             // 'qr' => '',
+        ];
+    }
+
+    public static function tarifaRules () {
+        //TODO controlar boolean que no sea texto
+        return [
+            'nombre' => 'required|min:3|unique:tarifas',
+            'precio' => 'required|numeric',
+        ];
+    }
+
+    public static function tarifaUpdateRules ( $id ) {
+        //TODO controlar boolean que no sea texto
+        return [
+            'id' => 'required|exists:tarifas,id',
+            'nombre' => 'required|min:3|unique:tarifas,nombre,'.$id,
+            'precio' => 'numeric',
         ];
     }
 

@@ -27,7 +27,7 @@ class Abonados extends Migration
             $table->boolean('pagado_tarifa')->nullable();
             $table->string('foto')->nullable();
             $table->string('qr')->nullable();
-            $table->string('hash')->unique();
+            $table->string('hash')->unique()->nullable();
             $table->dateTime('created_at');
             $table->dateTime('updated_at');
         });

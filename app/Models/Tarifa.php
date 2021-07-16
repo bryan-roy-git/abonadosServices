@@ -9,4 +9,9 @@ class Tarifa extends Model
 {
     use HasFactory;
     protected $table = 'tarifas';
+    protected $fillable = [
+        'id',
+        'nombre',
+        'precio',
+    ];
 }
