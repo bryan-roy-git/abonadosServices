@@ -33,12 +33,3 @@ Route::get('tarifa', [App\Http\Controllers\api\TarifaController::class,'index'])
 Route::post('tarifa/store', [App\Http\Controllers\api\TarifaController::class,'store']);
 Route::post('tarifa/update', [App\Http\Controllers\api\TarifaController::class,'update']);
 Route::delete('tarifa/{id}', [App\Http\Controllers\api\TarifaController::class,'destroy']);
-
-
-
-
-
-
-
-
-
